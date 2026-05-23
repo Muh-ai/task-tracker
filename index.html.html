@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Muhaimin OS - Progress Tracker</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Arial,sans-serif;background:#05070d;color:white;padding:14px;max-width:580px;margin:auto}
+.hero{background:linear-gradient(135deg,#123b77,#080b12);border:1px solid rgba(255,255,255,.12);border-radius:24px;padding:20px;margin-bottom:14px}
+h1{margin:0;font-size:30px}.sub{color:#a8b3c7;font-size:14px;margin-top:6px;line-height:1.45}
+.bar{height:12px;background:rgba(255,255,255,.12);border-radius:999px;overflow:hidden;margin-top:14px}.fill{height:100%;width:0;background:#4ea3ff}.score{font-weight:900;margin-top:9px}
+.card{background:#101624;border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:15px;margin:12px 0}
+h2{font-size:18px;margin:0 0 6px}.purpose{font-size:12.5px;color:#93a4bd;margin-bottom:10px;line-height:1.45}
+label.check{display:flex;align-items:flex-start;gap:10px;padding:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.09);border-radius:14px;margin:8px 0;line-height:1.35}
+input[type=checkbox]{width:21px;height:21px;accent-color:#4ea3ff;flex:none}
+input,textarea{width:100%;padding:12px;border-radius:14px;border:1px solid rgba(255,255,255,.12);background:#080b12;color:white;margin-top:7px;outline:none}
+textarea{min-height:82px;resize:vertical}.field{margin:10px 0}.field span{font-size:13px;color:#a8b3c7}.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{width:100%;border:0;background:#2563eb;color:white;font-weight:900;padding:14px;border-radius:16px;margin:8px 0}.reset{background:#374151}.danger{background:#7f1d1d}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:12px}.stat b{font-size:22px}.stat span{display:block;color:#a8b3c7;font-size:12px;margin-top:3px}
+.history{max-height:260px;overflow:auto}.day{border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);border-radius:15px;padding:11px;margin:8px 0}.dayTop{display:flex;justify-content:space-between;gap:8px;font-weight:800}.small{font-size:12.5px;color:#9ca3af;line-height:1.5}
+@media(max-width:480px){.two,.stats{grid-template-columns:1fr}body{padding:11px}h1{font-size:28px}}
+@media print{body{background:white;color:black;max-width:none}.hero,.card,.stat,.day{background:white;border:1px solid #ccc}button{display:none}input,textarea{border:1px solid #999;color:black;background:white}.sub,.purpose,.field span,.small,.stat span{color:#444}}
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Muhaimin OS</h1>
+  <div class="sub">Daily execution + progress history. Tick today, save the day, watch your progress build.</div>
+  <div class="sub" id="date"></div>
+  <div class="bar"><div class="fill" id="fill"></div></div>
+  <div class="score" id="score">0% complete</div>
+</div>
+
+<div class="card">
+  <h2>📈 Progress Dashboard</h2>
+  <div class="purpose">This section uses your saved daily logs.</div>
+  <div class="stats">
+    <div class="stat"><b id="daysLogged">0</b><span>days saved</span></div>
+    <div class="stat"><b id="avgScore">0%</b><span>average completion</span></div>
+    <div class="stat"><b id="gymDays">0</b><span>gym days</span></div>
+    <div class="stat"><b id="totalMoney">₹0</b><span>money recorded</span></div>
+    <div class="stat"><b id="avgWater">0L</b><span>avg water</span></div>
+    <div class="stat"><b id="latestWeight">—</b><span>latest weight</span></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🕌 Five Prayers</h2>
+  <div class="purpose">Purpose: structure and discipline.</div>
+  <label class="check"><input type="checkbox" data-check data-name="Fajr"> Fajr</label>
+  <label class="check"><input type="checkbox" data-check data-name="Zohar"> Zohar</label>
+  <label class="check"><input type="checkbox" data-check data-name="Asr"> Asr</label>
+  <label class="check"><input type="checkbox" data-check data-name="Maghrib"> Maghrib</label>
+  <label class="check"><input type="checkbox" data-check data-name="Isha"> Isha</label>
+</div>
+
+<div class="card">
+  <h2>💪 Gym</h2>
+  <label class="check"><input type="checkbox" data-check data-name="Gym"> Gym done</label>
+  <div class="field"><span>Workout done / muscle group</span><input data-save="workout" placeholder="Push / Pull / Legs / Upper"></div>
+</div>
+
+<div class="card">
+  <h2>🍽 Full Diet</h2>
+  <label class="check"><input type="checkbox" data-check> Pre-workout: 2 bananas + coffee + dates + water</label>
+  <label class="check"><input type="checkbox" data-check> Post-workout: mass gainer + milk</label>
+  <label class="check"><input type="checkbox" data-check> Breakfast: chapati + eggs + curd + fruit + potato</label>
+  <label class="check"><input type="checkbox" data-check> Lunch: rice + chicken + vegetables + curd + ghee</label>
+  <label class="check"><input type="checkbox" data-check> Evening: oats + sabudana cooked in milk</label>
+  <label class="check"><input type="checkbox" data-check> Dinner: chicken/eggs + rice/chapati</label>
+  <label class="check"><input type="checkbox" data-check> Night shake if calories are low</label>
+  <div class="field"><span>Diet notes</span><input data-save="dietNotes" placeholder="Example: ate 250g chicken / skipped night shake"></div>
+</div>
+
+<div class="card">
+  <h2>💊 Supplements</h2>
+  <label class="check"><input type="checkbox" data-check> Creatine 5g</label>
+  <label class="check"><input type="checkbox" data-check> Mass gainer</label>
+  <label class="check"><input type="checkbox" data-check> Omega-3</label>
+  <label class="check"><input type="checkbox" data-check> Chia / sabja / gut-health seeds</label>
+  <label class="check"><input type="checkbox" data-check> Curd / buttermilk for digestion</label>
+</div>
+
+<div class="card">
+  <h2>✨ SC</h2>
+  <label class="check"><input type="checkbox" data-check> SC done</label>
+  <div class="field"><span>SC note</span><input data-save="scNote" placeholder="Face wash + moisturizer + sunscreen + beard care"></div>
+</div>
+
+<div class="card">
+  <h2>📚 Study Block</h2>
+  <label class="check"><input type="checkbox" data-check> Study block completed</label>
+  <div class="two">
+    <div class="field"><span>Target study time</span><input data-save="studyTarget" placeholder="2 hours"></div>
+    <div class="field"><span>Actual study time</span><input data-save="studyActual" placeholder="1h 40m"></div>
+  </div>
+  <div class="field"><span>What did I study?</span><input data-save="studyTopic" placeholder="Coding / AI / engineering / English / DSA"></div>
+</div>
+
+<div class="card">
+  <h2>💸 Money Building</h2>
+  <label class="check"><input type="checkbox" data-check> Money block completed</label>
+  <div class="two">
+    <div class="field"><span>Target money-work time</span><input data-save="moneyTarget" placeholder="2 hours"></div>
+    <div class="field"><span>Actual money-work time</span><input data-save="moneyActual" placeholder="1h 30m"></div>
+  </div>
+  <div class="field"><span>Skill worked on</span><input data-save="moneySkill" placeholder="Editing / content / portfolio / crypto / freelancing"></div>
+  <div class="field"><span>Money made today</span><input data-save="moneyMade" placeholder="Example: 0 or 500"></div>
+  <div class="field"><span>Output created</span><input data-save="moneyOutput" placeholder="1 reel edited / portfolio section done / 3 clients messaged"></div>
+</div>
+
+<div class="card">
+  <h2>📊 Daily Record</h2>
+  <div class="two">
+    <div class="field"><span>Water intake</span><input data-save="water" placeholder="4.5L"></div>
+    <div class="field"><span>Sleep timing</span><input data-save="sleep" placeholder="11:30 PM - 7 AM"></div>
+    <div class="field"><span>Screen time</span><input data-save="screen" placeholder="4h"></div>
+    <div class="field"><span>Body weight</span><input data-save="weight" placeholder="54.8 kg"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>🧠 Daily Reflection</h2>
+  <div class="field"><span>How did I feel today?</span><textarea data-save="feel" placeholder="One honest line."></textarea></div>
+  <div class="field"><span>What should I improve tomorrow?</span><textarea data-save="improve" placeholder="One clear improvement."></textarea></div>
+</div>
+
+<button onclick="saveDay()">Save Today to Progress</button>
+<button onclick="window.print()">Save / Print as PDF</button>
+<button class="reset" onclick="resetToday()">Reset Today Only</button>
+
+<div class="card">
+  <h2>📅 Saved Days</h2>
+  <div class="purpose">Your daily records appear here after you click “Save Today to Progress”.</div>
+  <div class="history" id="history"></div>
+</div>
+
+<button class="danger" onclick="clearHistory()">Clear All Progress History</button>
+
+<p class="small">Important: this saves in the browser using localStorage. It stays on the same device/browser unless you clear browser data.</p>
+
+<script>
+const today = new Date().toISOString().slice(0,10);
+const todayKey = "muhaimin-os-today-" + today;
+const historyKey = "muhaimin-os-history-v1";
+document.getElementById("date").innerText = new Date().toDateString();
+
+const checks=[...document.querySelectorAll("[data-check]")];
+const fields=[...document.querySelectorAll("[data-save]")];
+
+function pct(){
+  return Math.round(checks.filter(c=>c.checked).length/checks.length*100);
+}
+function currentData(){
+  return {
+    date: today,
+    percent: pct(),
+    checks: checks.map(c=>c.checked),
+    fields: Object.fromEntries(fields.map(f=>[f.dataset.save,f.value])),
+    gymDone: checks.find(c=>c.dataset.name==="Gym")?.checked || false,
+    savedAt: new Date().toLocaleString()
+  };
+}
+function update(){
+  const p=pct();
+  document.getElementById("fill").style.width=p+"%";
+  document.getElementById("score").innerText=p+"% complete — "+checks.filter(c=>c.checked).length+"/"+checks.length;
+}
+function saveTodayDraft(){
+  localStorage.setItem(todayKey, JSON.stringify(currentData()));
+  update();
+}
+function loadToday(){
+  const data=JSON.parse(localStorage.getItem(todayKey)||"{}");
+  if(data.checks) checks.forEach((c,i)=>c.checked=!!data.checks[i]);
+  if(data.fields) fields.forEach(f=>f.value=data.fields[f.dataset.save]||"");
+  update();
+}
+function getHistory(){
+  return JSON.parse(localStorage.getItem(historyKey)||"[]");
+}
+function setHistory(h){
+  localStorage.setItem(historyKey, JSON.stringify(h));
+  renderHistory();
+}
+function saveDay(){
+  const entry=currentData();
+  let history=getHistory().filter(x=>x.date!==today);
+  history.unshift(entry);
+  setHistory(history);
+  alert("Today saved to progress history.");
+}
+function numberFromText(v){
+  const n=parseFloat(String(v||"").replace(/[^\d.]/g,""));
+  return isNaN(n)?0:n;
+}
+function renderHistory(){
+  const h=getHistory();
+  document.getElementById("daysLogged").innerText=h.length;
+  const avg=h.length?Math.round(h.reduce((a,b)=>a+(b.percent||0),0)/h.length):0;
+  document.getElementById("avgScore").innerText=avg+"%";
+  document.getElementById("gymDays").innerText=h.filter(x=>x.gymDone).length;
+  const totalMoney=h.reduce((a,b)=>a+numberFromText(b.fields?.moneyMade),0);
+  document.getElementById("totalMoney").innerText="₹"+totalMoney;
+  const waterLogs=h.map(x=>numberFromText(x.fields?.water)).filter(Boolean);
+  const avgWater=waterLogs.length?(waterLogs.reduce((a,b)=>a+b,0)/waterLogs.length).toFixed(1):"0";
+  document.getElementById("avgWater").innerText=avgWater+"L";
+  const latestWeight=h.find(x=>x.fields?.weight)?.fields?.weight || "—";
+  document.getElementById("latestWeight").innerText=latestWeight;
+
+  const box=document.getElementById("history");
+  if(!h.length){box.innerHTML='<p class="small">No saved days yet. Fill today and press Save Today to Progress.</p>'; return;}
+  box.innerHTML=h.map(x=>`
+    <div class="day">
+      <div class="dayTop"><span>${x.date}</span><span>${x.percent}%</span></div>
+      <div class="small">Study: ${x.fields?.studyActual || "—"} | Money: ${x.fields?.moneyMade || "₹0"} | Water: ${x.fields?.water || "—"} | Weight: ${x.fields?.weight || "—"}</div>
+      <div class="small">Skill: ${x.fields?.moneySkill || "—"}</div>
+      <div class="small">Felt: ${x.fields?.feel || "—"}</div>
+    </div>
+  `).join("");
+}
+function resetToday(){
+  if(confirm("Reset today's draft only? Progress history will stay.")){
+    localStorage.removeItem(todayKey);
+    location.reload();
+  }
+}
+function clearHistory(){
+  if(confirm("This will delete all saved progress history. Continue?")){
+    localStorage.removeItem(historyKey);
+    renderHistory();
+  }
+}
+checks.forEach(c=>c.addEventListener("change",saveTodayDraft));
+fields.forEach(f=>f.addEventListener("input",saveTodayDraft));
+loadToday();
+renderHistory();
+</script>
+</body>
+</html>
